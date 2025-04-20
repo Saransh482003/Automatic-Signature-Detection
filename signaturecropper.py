@@ -1,16 +1,22 @@
+import os
 import cv2
 import supervision as sv
 from huggingface_hub import hf_hub_download
 from ultralytics import YOLO
-import os
 import pandas as pd
 import numpy as np
 
 class SignatureCropper:
-    def __init__(self):
+    def __init__(self, hf_token=None):
+        # Use token from argument or environment
+        hf_token = hf_token or os.getenv("HUGGINGFACE_TOKEN")
+        if not hf_token:
+            raise ValueError("Hugging Face token is required. Pass it as an argument or set HUGGINGFACE_TOKEN env variable.")
+
         model_path = hf_hub_download(
             repo_id="tech4humans/yolov8s-signature-detector", 
-            filename="yolov8s.pt"
+            filename="yolov8s.pt",
+            token=hf_token
         )
         self.model = YOLO(model_path)
 
@@ -21,7 +27,7 @@ class SignatureCropper:
 
         with open("signature_logs.txt", "a") as f:
             for img in images:
-                image_path = f"./{images_dir}/{img}"
+                image_path = os.path.join(images_dir, img)
                 image = cv2.imread(image_path)
 
                 results = self.model(image_path)
@@ -48,4 +54,4 @@ class SignatureCropper:
                 cropped = image[y_min:y_max, x_min:x_max]
                 
                 if cropped.size > 0:
-                    cv2.imwrite(f"./{target_dir}/crop_{img.split('.')[0]}.jpg", cropped)
+                    cv2.imwrite(os.path.join(target_dir, f"crop_{os.path.splitext(img)[0]}.jpg"), cropped)
