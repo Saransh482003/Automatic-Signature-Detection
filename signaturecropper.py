@@ -19,6 +19,11 @@ class SignatureCropper:
             token=hf_token
         )
         self.model = YOLO(model_path)
+        self.about = """This module can detect and crop out signatures from an image. Created by Saransh Saini and Aayush Kumawat two undergrads at IIT Madras in the BS Data Science and Applications program.
+        The model is trained on a dataset of 1000 images of signatures. The model is a YOLOv8 model trained on the YOLOv8 architecture. The model is trained on the COCO dataset and fine-tuned on the signature dataset.
+        Connect with us on LinkedIn:
+        Saransh Saini: https://www.linkedin.com/in/saranshsaini48/
+        Aayush Kumawat: https://www.linkedin.com/in/aayush-kumawat-1a1641277/"""
 
     def sign_detect(self, images_dir, target_dir):
         images = os.listdir(images_dir)
